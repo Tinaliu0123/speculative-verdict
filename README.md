@@ -144,7 +144,7 @@ python main.py \
 
 Generate and use layout-annotated images for information-intensive tasks:
 ```bash
-# 1. Generate annotations
+# 1. Generate layout-annotated images
 python layout_annotation/pipeline.py \
     --input data/infovqa/images/ \
     --output data/infovqa/annotated/
