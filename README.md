@@ -53,10 +53,10 @@ pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.
 
 ### Download Datasets
 
-- **InfographicVQA**: [DocVQA Datasets](https://www.docvqa.org/datasets/infographicvqa)
-- **ChartMuseum**: [GitHub Repository](https://github.com/nunonmg/chartmuseum)
-- **ChartQAPro**: [HuggingFace](https://huggingface.co/datasets/nyu-visionx/ChartQA-Pro)
-- **HR-Bench**: [GitHub Repository](https://github.com/opencompass/HR-Bench)
+- **InfographicVQA**: [InfographicVQA Dataset](https://www.docvqa.org/datasets/infographicvqa)
+- **ChartMuseum**: [🤗ChartMuseum Dataset](https://huggingface.co/datasets/lytang/ChartMuseum)
+- **ChartQAPro**: [🤗ChartQAPro Dataset](https://huggingface.co/datasets/ahmed-masry/ChartQAPro)
+- **HR-Bench**: [🤗HR-Bench Dataset](https://huggingface.co/datasets/DreamMr/HR-Bench)
 
 ## Quick Start
 
