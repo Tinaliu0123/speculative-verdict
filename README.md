@@ -1,5 +1,20 @@
 # Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation
 
+## 📝 Table of Contents
+
+- [Overview](#overview)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+  - [Download Datasets](#download-datasets)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+  - [Modes](#modes)
+  - [Parameters](#parameters)
+- [Advanced Usage](#advanced-usage)
+  - [Using Annotated Images](#using-annotated-images)
+  - [Adding Custom Models](#adding-custom-models)
+- [Evaluation](#evaluation)
+
 ## Overview
 
 ![Method Overview](method.png)
@@ -11,7 +26,7 @@
 specverdict/
 ├── main.py                  # Main entry point for all pipeline stages
 ├── draft.py                 # Draft stage: support inference and consensus scoring
-├── verdict.py               # Verdict stage (Qwen/GPT-4o)
+├── verdict.py               # Verdict stage
 ├── consensus_scoring.py     # Consensus-based expert ranking
 ├── prompts.py               # Dataset-specific prompts
 ├── model.py                 # Model wrappers
@@ -36,16 +51,16 @@ pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.
 
 **Note:** For LLaVA-OneVision, use `transformers==4.53.0` instead of the default version.
 
-### Dataset Downloads
+### Download Datasets
 
-- **InfoVQA**: [DocVQA Datasets](https://www.docvqa.org/datasets/infographicvqa)
+- **InfographicVQA**: [DocVQA Datasets](https://www.docvqa.org/datasets/infographicvqa)
 - **ChartMuseum**: [GitHub Repository](https://github.com/nunonmg/chartmuseum)
-- **ChartQA-Pro**: [HuggingFace](https://huggingface.co/datasets/nyu-visionx/ChartQA-Pro)
+- **ChartQAPro**: [HuggingFace](https://huggingface.co/datasets/nyu-visionx/ChartQA-Pro)
 - **HR-Bench**: [GitHub Repository](https://github.com/opencompass/HR-Bench)
 
 ## Quick Start
 
-### Example: Complete Pipeline on InfoVQA
+### Example: Complete Pipeline on InfographicVQA
 
 ```bash
 # 1. Initial inference with 5 candidate models (QA mode)
@@ -161,12 +176,12 @@ See existing implementations for reference.
 Evaluate final results against ground truth, following each dataset's evaluation metrics:
 
 ```bash
-# InfoVQA (ANLS metric)
+# InfographicVQA (ANLS metric)
 python eval/eval.py infovqa \
     --input results/verdict.json \
     --output eval_results.json
 
-# ChartQA-Pro (relaxed accuracy)
+# ChartQAPro (relaxed accuracy)
 python eval/eval.py chartqapro \
     --input results/verdict.json \
     --meta data/chartqapro/metadata.jsonl
