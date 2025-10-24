@@ -1,4 +1,13 @@
+<div align="center">
+  
 # Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation
+
+[![arXiv](https://img.shields.io/badge/arXiv-2510.20812-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2510.20812)
+[![Homepage](https://img.shields.io/badge/Repo-181717.svg?logo=github&logoColor=white)](https://github.com/Tinaliu0123/speculative-verdict)
+
+The codebase of "[Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation](https://arxiv.org/abs/2510.20812)"
+
+</div>
 
 ## 📝 Table of Contents
 
@@ -25,7 +34,7 @@
 ```
 specverdict/
 ├── main.py                  # Main entry point for all pipeline stages
-├── draft.py                 # Draft stage: support inference and consensus scoring
+├── draft.py                 # Draft stage
 ├── verdict.py               # Verdict stage
 ├── consensus_scoring.py     # Consensus-based expert ranking
 ├── prompts.py               # Dataset-specific prompts
@@ -194,9 +203,17 @@ python eval/eval.py chartmuseum \
 See [eval/README.md](eval/README.md) for detailed evaluation documentation.
 
 
-<!-- ## Citation
+## Citation
 
-If you use this code, please cite:
-
+If you find this work useful, please cite our paper:
 ```bibtex
-``` -->
+@misc{liu2025smalldraftsbigverdict,
+      title={Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation}, 
+      author={Yuhan Liu and Lianhui Qin and Shengjie Wang},
+      year={2025},
+      eprint={2510.20812},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2510.20812}, 
+}
+```
