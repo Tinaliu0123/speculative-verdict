@@ -1,4 +1,28 @@
+<div align="center">
+  
 # Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation
+
+[![arXiv](https://img.shields.io/badge/arXiv-2510.20812-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2510.20812)
+[![Homepage](https://img.shields.io/badge/Repo-181717.svg?logo=github&logoColor=white)](https://github.com/Tinaliu0123/speculative-verdict)
+
+The codebase of "[Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation](https://arxiv.org/abs/2510.20812)"
+
+</div>
+
+## 📝 Table of Contents
+
+- [Overview](#overview)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+  - [Download Datasets](#download-datasets)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+  - [Modes](#modes)
+  - [Parameters](#parameters)
+- [Advanced Usage](#advanced-usage)
+  - [Using Annotated Images](#using-annotated-images)
+  - [Adding Custom Models](#adding-custom-models)
+- [Evaluation](#evaluation)
 
 ## Overview
 
@@ -10,8 +34,8 @@
 ```
 specverdict/
 ├── main.py                  # Main entry point for all pipeline stages
-├── draft.py                 # Draft stage: support inference and consensus scoring
-├── verdict.py               # Verdict stage (Qwen/GPT-4o)
+├── draft.py                 # Draft stage
+├── verdict.py               # Verdict stage
 ├── consensus_scoring.py     # Consensus-based expert ranking
 ├── prompts.py               # Dataset-specific prompts
 ├── model.py                 # Model wrappers
@@ -36,16 +60,16 @@ pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.
 
 **Note:** For LLaVA-OneVision, use `transformers==4.53.0` instead of the default version.
 
-### Dataset Downloads
+### Download Datasets
 
-- **InfoVQA**: [DocVQA Datasets](https://www.docvqa.org/datasets/infographicvqa)
-- **ChartMuseum**: [GitHub Repository](https://github.com/nunonmg/chartmuseum)
-- **ChartQA-Pro**: [HuggingFace](https://huggingface.co/datasets/nyu-visionx/ChartQA-Pro)
-- **HR-Bench**: [GitHub Repository](https://github.com/opencompass/HR-Bench)
+- **InfographicVQA**: [InfographicVQA Dataset](https://www.docvqa.org/datasets/infographicvqa)
+- **ChartMuseum**: [🤗ChartMuseum Dataset](https://huggingface.co/datasets/lytang/ChartMuseum)
+- **ChartQAPro**: [🤗ChartQAPro Dataset](https://huggingface.co/datasets/ahmed-masry/ChartQAPro)
+- **HR-Bench**: [🤗HR-Bench Dataset](https://huggingface.co/datasets/DreamMr/HR-Bench)
 
 ## Quick Start
 
-### Example: Complete Pipeline on InfoVQA
+### Example: Complete Pipeline on InfographicVQA
 
 ```bash
 # 1. Initial inference with 5 candidate models (QA mode)
@@ -129,7 +153,7 @@ python main.py \
 
 Generate and use layout-annotated images for information-intensive tasks:
 ```bash
-# 1. Generate annotations
+# 1. Generate layout-annotated images
 python layout_annotation/pipeline.py \
     --input data/infovqa/images/ \
     --output data/infovqa/annotated/
@@ -161,12 +185,12 @@ See existing implementations for reference.
 Evaluate final results against ground truth, following each dataset's evaluation metrics:
 
 ```bash
-# InfoVQA (ANLS metric)
+# InfographicVQA (ANLS metric)
 python eval/eval.py infovqa \
     --input results/verdict.json \
     --output eval_results.json
 
-# ChartQA-Pro (relaxed accuracy)
+# ChartQAPro (relaxed accuracy)
 python eval/eval.py chartqapro \
     --input results/verdict.json \
     --meta data/chartqapro/metadata.jsonl
@@ -179,9 +203,17 @@ python eval/eval.py chartmuseum \
 See [eval/README.md](eval/README.md) for detailed evaluation documentation.
 
 
-<!-- ## Citation
+## Citation
 
-If you use this code, please cite:
-
+If you find this work useful, please cite our paper:
 ```bibtex
-``` -->
+@misc{liu2025smalldraftsbigverdict,
+      title={Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation}, 
+      author={Yuhan Liu and Lianhui Qin and Shengjie Wang},
+      year={2025},
+      eprint={2510.20812},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2510.20812}, 
+}
+```
