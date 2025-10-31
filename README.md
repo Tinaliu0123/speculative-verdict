@@ -14,7 +14,7 @@ The codebase of "[Small Drafts, Big Verdict: Information-Intensive Visual Reason
 - [Overview](#overview)
 - [Project Structure](#project-structure)
 - [Installation](#installation)
-  - [Download Datasets](#download-datasets)
+- [Download Datasets](#download-datasets)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
   - [Modes](#modes)
@@ -58,14 +58,18 @@ pip install -r requirements.txt
 pip install https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.4.post1/flash_attn-2.7.4.post1+cu12torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
 ```
 
-**Note:** For LLaVA-OneVision, use `transformers==4.53.0` instead of the default version.
+**Note:** Use `transformers>=4.57.1` for GLM-4.1V-Thinking. Use `transformers==4.53.0` for LLaVA-OneVision.
 
-### Download Datasets
+## Download Datasets
 
-- **InfographicVQA**: [InfographicVQA Dataset](https://www.docvqa.org/datasets/infographicvqa)
-- **ChartMuseum**: [🤗ChartMuseum Dataset](https://huggingface.co/datasets/lytang/ChartMuseum)
-- **ChartQAPro**: [🤗ChartQAPro Dataset](https://huggingface.co/datasets/ahmed-masry/ChartQAPro)
-- **HR-Bench**: [🤗HR-Bench Dataset](https://huggingface.co/datasets/DreamMr/HR-Bench)
+1. **InfographicVQA**: [InfographicVQA Dataset](https://www.docvqa.org/datasets/infographicvqa)
+2. **ChartMuseum**: [🤗ChartMuseum Dataset](https://huggingface.co/datasets/lytang/ChartMuseum)
+3. **ChartQAPro**: [🤗ChartQAPro Dataset](https://huggingface.co/datasets/ahmed-masry/ChartQAPro)
+4. **HR-Bench**: [🤗HR-Bench Dataset](https://huggingface.co/datasets/DreamMr/HR-Bench)
+
+**Note:** The following datasets require light preprocessing of the question text to satisfy task-specific formatting.
+- ChartQAPro: Follow the official prompt in its [paper](https://arxiv.org/pdf/2504.05506) and **prepend** the required paragraph metadata when needed.
+- HR-Bench 4K: For multiple-choice questions, **append** explicit A/B/C/D options immediately after the question.
 
 ## Quick Start
 
@@ -190,7 +194,7 @@ python eval/eval.py infovqa \
     --input results/verdict.json \
     --output eval_results.json
 
-# ChartQAPro (relaxed accuracy)
+# ChartQAPro (Relaxed accuracy)
 python eval/eval.py chartqapro \
     --input results/verdict.json \
     --meta data/chartqapro/metadata.jsonl
@@ -198,6 +202,11 @@ python eval/eval.py chartqapro \
 # ChartMuseum (GPT-based scoring)
 python eval/eval.py chartmuseum \
     --input results/verdict.json
+
+# HR-Bench (Accuracy)
+python eval/eval.py hrbench \
+    --input results/verdict.json \
+    --bench data/hr_bench.jsonl
 ```
 
 See [eval/README.md](eval/README.md) for detailed evaluation documentation.
