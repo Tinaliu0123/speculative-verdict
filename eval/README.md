@@ -1,11 +1,11 @@
 # Evaluation
 
-Evaluation toolkit for InfoVQA, ChartQAPro, ChartMuseum and HR-Bench 4K benchmarks.
+Evaluation toolkit for InfographicVQA, ChartQAPro, ChartMuseum and HR-Bench 4K benchmarks.
 
 ## Quick Start
 
 ```bash
-# InfoVQA (ANLS metric)
+# InfographicVQA (ANLS metric)
 python eval/eval.py infovqa --input preds.json
 
 # ChartQAPro (relaxed accuracy)
@@ -35,7 +35,7 @@ Use `--answer-key` to specify a different prediction field.
 
 | Benchmark | Metric | Description |
 |-----------|--------|-------------|
-| **InfoVQA** | ANLS | Edit distance-based (threshold=0.5) |
+| **InfographicVQA** | ANLS | Edit distance-based (threshold=0.5) |
 | **ChartQAPro** | Relaxed Accuracy | Numeric: ≤5% error; Text: ANLS |
 | **ChartMuseum** | GPT-4 Judge | Semantic equivalence |
 | **HR-Bench** | Accuracy | Binary accuracy for multiple choice (A/B/C/D) |
