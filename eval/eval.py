@@ -15,6 +15,9 @@ Usage:
     
     # ChartMuseum
     python eval.py chartmuseum --input preds.json
+
+    # HR-Bench
+    python eval.py hrbench --input preds.json --bench hr_bench_4k.jsonl
 """
 
 import argparse
@@ -29,7 +32,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from infovqa import InfoVQAEvaluator
 from chartqapro import ChartQAProEvaluator
 from chartmuseum import ChartMuseumEvaluator
-
+from hrbench import HRBenchEvaluator
 
 def setup_logging(verbose: bool = False):
     """Setup logging configuration."""
@@ -40,13 +43,11 @@ def setup_logging(verbose: bool = False):
         handlers=[logging.StreamHandler()]
     )
 
-
 def save_results(results: dict, output_path: str):
     """Save results to JSON file."""
     Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
-
 
 def evaluate_infovqa(args):
     """Run InfoVQA evaluation."""
@@ -64,7 +65,6 @@ def evaluate_infovqa(args):
         logging.info(f"Results saved to {args.output}")
     
     return results
-
 
 def evaluate_chartqapro(args):
     """Run ChartQAPro evaluation."""
@@ -87,7 +87,6 @@ def evaluate_chartqapro(args):
     
     return results
 
-
 def evaluate_chartmuseum(args):
     """Run ChartMuseum evaluation."""
     evaluator = ChartMuseumEvaluator(
@@ -106,26 +105,25 @@ def evaluate_chartmuseum(args):
     
     return results
 
+def evaluate_hrbench(args):
+    """Run HR-Bench evaluation."""
+    evaluator = HRBenchEvaluator(
+        bench_path=args.bench,
+        answer_key=args.answer_key,
+        match_key=args.match_key
+    )
+    
+    results = evaluator.evaluate_file(args.input)
+    evaluator.print_results(results)
+    
+    if args.output:
+        save_results(results, args.output)
+        logging.info(f"Results saved to {args.output}")
+    
+    return results
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Evaluate VQA benchmark predictions',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-        Examples:
-        # InfoVQA evaluation
-        python eval.py infovqa --input preds.json
-        
-        # ChartQAPro with custom answer key
-        python eval.py chartqapro --input preds.json --answer-key answer
-        
-        # ChartQAPro with metadata file
-        python eval.py chartqapro --input preds.json --meta meta.jsonl
-        
-        # ChartMuseum with output file
-        python eval.py chartmuseum --input preds.json --output results.json
-                """
-            )
+    parser = argparse.ArgumentParser(description='Evaluate VQA benchmark predictions')
     
     # Global arguments
     parser.add_argument('--verbose', '-v', action='store_true',
@@ -211,6 +209,29 @@ def main():
         '--output', '-o',
         help='Path to save results (JSON)'
     )
+
+    # HR-Bench
+    hrbench_parser = subparsers.add_parser('hrbench', help='Evaluate HR-Bench')
+    hrbench_parser.add_argument(
+        '--input', '-i', required=True,
+        help='Path to predictions file (JSON/JSONL)'
+    )
+    hrbench_parser.add_argument(
+        '--bench', '-b',
+        help='Path to benchmark JSONL file (optional if GT in predictions)'
+    )
+    hrbench_parser.add_argument(
+        '--answer-key', default='final_answer',
+        help='Key for prediction answers (default: final_answer)'
+    )
+    hrbench_parser.add_argument(
+        '--match-key', default='idx',
+        help='Key for matching records (default: idx)'
+    )
+    hrbench_parser.add_argument(
+        '--output', '-o',
+        help='Path to save results (JSON)'
+    )
     
     args = parser.parse_args()
     
@@ -224,6 +245,8 @@ def main():
         return evaluate_chartqapro(args)
     elif args.benchmark == 'chartmuseum':
         return evaluate_chartmuseum(args)
+    elif args.benchmark == 'hrbench':
+        return evaluate_hrbench(args)
 
 
 if __name__ == '__main__':

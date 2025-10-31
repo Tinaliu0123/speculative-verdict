@@ -79,27 +79,3 @@ def extract_ground_truths(entry: Dict[str, Any]) -> List[str]:
                 return [gts.strip()]
     
     return []
-
-
-def save_results(
-    results: Dict[str, Any],
-    output_path: Union[str, Path],
-    format: str = 'json'
-) -> None:
-    """
-    Save evaluation results to file.
-    
-    Args:
-        results: Results dictionary
-        output_path: Output file path
-        format: Output format ('json' or 'jsonl')
-    """
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_path, 'w', encoding='utf-8') as f:
-        if format == 'jsonl' and isinstance(results.get('data'), list):
-            for item in results['data']:
-                f.write(json.dumps(item, ensure_ascii=False) + '\n')
-        else:
-            json.dump(results, f, ensure_ascii=False, indent=2)
