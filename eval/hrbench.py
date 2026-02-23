@@ -12,9 +12,7 @@ import re
 import logging
 from typing import Dict, List, Any, Optional
 from collections import defaultdict
-from pathlib import Path
 
-from metrics import compute_exact_match
 from utils import load_json_or_jsonl, extract_answer
 
 

@@ -9,17 +9,11 @@ Core functions:
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, asdict
-from typing import Dict, List, Tuple, Any, Optional, Union
-from pathlib import Path
-from PIL import Image
-import re
-import json
+from dataclasses import dataclass
+from typing import Dict, List, Any, Optional
 import torch
-import time
 
-from transformers import AutoTokenizer, AutoModel, AutoProcessor, AutoModelForCausalLM, AutoModelForVision2Seq
-from transformers.image_utils import load_image
+from transformers import AutoTokenizer, AutoModel, AutoProcessor, AutoModelForCausalLM
 
 try:
     from transformers import Glm4vForConditionalGeneration
@@ -45,7 +39,7 @@ from utils.post_process import (
     is_only_think_fragment,
     chartmuseum_extract_answer
 )
-from prompts import get_prompt, detect_dataset_from_path
+from prompts import get_prompt
 
 @dataclass
 class QAEntry:

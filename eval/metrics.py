@@ -4,7 +4,7 @@
 Common evaluation metrics for visual question answering benchmarks.
 """
 
-from typing import List, Optional
+from typing import List
 from rapidfuzz.distance import Levenshtein
 
 

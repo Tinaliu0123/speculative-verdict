@@ -103,7 +103,6 @@ class ChartMuseumEvaluator:
         """
         try:
             from datasets import Dataset
-            import pandas as pd
         except ImportError:
             raise ImportError(
                 "ChartMuseum evaluator requires datasets. "

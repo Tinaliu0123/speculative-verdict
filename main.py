@@ -11,11 +11,9 @@ import pathlib
 import random
 from dataclasses import asdict
 from typing import Any, Dict, Iterable, List, Optional
-from PIL import Image
 
 import numpy as np
 import torch
-from qwen_vl_utils import process_vision_info
 
 from draft import (
     QAEntry,
@@ -28,8 +26,7 @@ from draft import (
 )
 from verdict import qwen_verdict, gpt4o_verdict
 
-from prompts import detect_dataset_from_path, get_legacy_prompts
-from utils.post_process import extract_final_boxed_content, clean_think_tags, clean_answer
+from prompts import detect_dataset_from_path
 
 DEFAULT_FLUSH_EVERY = 10
 
@@ -347,7 +344,10 @@ def run_verdict_batch(
     in_path: pathlib.Path,
     out_path: pathlib.Path,
     *,
-    verdict_model_path: str,
+    verdict_model_path: Optional[str] = None,
+    verdict_backend: str = "gpt4o",
+    verdict_api_key: Optional[str] = None,
+    verdict_openai_model: str = "gpt-4o",
     annotated_folder: str = "",
     dataset: Optional[str] = None,
     start_idx: int = 0,
@@ -355,8 +355,12 @@ def run_verdict_batch(
     flush_every: int = DEFAULT_FLUSH_EVERY,
 ) -> None:
     """Execute verdict over a dataset with existing model reasoning."""
-    
-    model, processor, tokenizer, tag = load_vlm(verdict_model_path)
+
+    model = processor = tokenizer = None
+    if verdict_backend == "qwen":
+        if not verdict_model_path:
+            raise ValueError("verdict_backend=qwen requires --models with at least one model path")
+        model, processor, tokenizer, _ = load_vlm(verdict_model_path)
     results: List[Dict[str, Any]] = []
 
     processed = 0
@@ -372,16 +376,29 @@ def run_verdict_batch(
         if "models_reasoning" not in entry_dict:
             raise ValueError(f"Entry {idx} missing 'models_reasoning' field required for verdict")
 
-        full_response, final_answer = qwen_verdict(
-            model=model,
-            processor=processor,
-            question=entry_dict["question"],
-            answers_dict=entry_dict["models_reasoning"],
-            orig_img_path=entry_dict["image_path"],
-            annotated_folder=annotated_folder,
-            dataset=dataset, 
-            device="cuda"
-        )
+        if verdict_backend == "qwen":
+            full_response, final_answer = qwen_verdict(
+                model=model,
+                processor=processor,
+                question=entry_dict["question"],
+                answers_dict=entry_dict["models_reasoning"],
+                orig_img_path=entry_dict["image_path"],
+                annotated_folder=annotated_folder,
+                dataset=dataset,
+                device="cuda"
+            )
+        elif verdict_backend == "gpt4o":
+            full_response, final_answer = gpt4o_verdict(
+                question=entry_dict["question"],
+                answers_dict=entry_dict["models_reasoning"],
+                orig_img_path=entry_dict["image_path"],
+                annotated_folder=annotated_folder,
+                dataset=dataset or "infovqa",
+                api_key=verdict_api_key,
+                model_name=verdict_openai_model,
+            )
+        else:
+            raise ValueError(f"Unsupported verdict backend: {verdict_backend}")
 
         entry_dict["final_reasoning"] = full_response
         entry_dict["final_answer"] = final_answer
@@ -429,6 +446,12 @@ def parse_args() -> argparse.Namespace:
                    help="[prefill_cross] restrict cross-eval target.")
     p.add_argument("--annotated_folder", default="",
                    help="[verdict] folder containing layout-annotated images.")
+    p.add_argument("--verdict_backend", choices=["qwen", "gpt4o"], default="gpt4o",
+                   help="[verdict] backend used for final fusion.")
+    p.add_argument("--verdict_api_key", default=None,
+                   help="[verdict:gpt4o] OpenAI API key. If omitted, uses OPENAI_API_KEY env var.")
+    p.add_argument("--verdict_openai_model", default="gpt-4o",
+                   help="[verdict:gpt4o] OpenAI model name.")
     
     # Processing parameters
     p.add_argument("--start_idx", type=int, default=0,
@@ -446,14 +469,30 @@ def parse_args() -> argparse.Namespace:
                    
     return p.parse_args()
 
+def validate_args(args: argparse.Namespace) -> None:
+    """Validate mode-specific CLI arguments with actionable errors."""
+    if args.mode in {"inference", "prefill_cross"} and not args.models:
+        raise ValueError(f"{args.mode} mode requires --models with at least one model path")
+
+    if args.mode == "inference_from_topk":
+        if not args.consensus_file:
+            raise ValueError("--consensus_file required for inference_from_topk mode")
+        if not args.model_mapping:
+            raise ValueError("--model_mapping required for inference_from_topk mode")
+
+    if args.mode == "verdict" and args.verdict_backend == "qwen" and not args.models:
+        raise ValueError("verdict mode with qwen backend requires --models with at least one model path")
+
 def main() -> None:
     args = parse_args()
+    validate_args(args)
     setup_logging(args.verbose)
     set_all_seeds(args.seed)
 
     in_path = pathlib.Path(args.in_json)
     out_path = pathlib.Path(args.out_json)
     model_paths = args.models
+    dataset = args.dataset or detect_dataset_from_path(str(in_path))
 
     if args.mode == "inference": 
         run_inference_batch( 
@@ -461,7 +500,7 @@ def main() -> None:
             out_path=out_path,
             model_paths=model_paths,
             inference_mode=args.inference_mode, 
-            dataset=args.dataset,
+            dataset=dataset,
             start_idx=args.start_idx,
             max_entries=args.max_entries,
             flush_every=args.flush_every,
@@ -475,18 +514,13 @@ def main() -> None:
             mode="cross",
             source_key=args.source_key,
             running_model=args.running_model,
-            dataset=args.dataset,
+            dataset=dataset,
             start_idx=args.start_idx,
             max_entries=args.max_entries,
             flush_every=args.flush_every,
             merge_output=args.merge_output,
         )
     elif args.mode == "inference_from_topk":
-        if not args.consensus_file:
-            raise ValueError("--consensus_file required for inference_from_topk mode")
-        if not args.model_mapping:
-            raise ValueError("--model_mapping required for inference_from_topk mode")
-        
         import json
         model_tag_to_path = json.loads(args.model_mapping)
         
@@ -496,21 +530,23 @@ def main() -> None:
             consensus_path=pathlib.Path(args.consensus_file),
             model_tag_to_path=model_tag_to_path, 
             inference_mode=args.inference_mode,
-            dataset=args.dataset,
+            dataset=dataset,
             start_idx=args.start_idx,
             max_entries=args.max_entries,
             flush_every=args.flush_every,
             merge_output=args.merge_output,
         )
     elif args.mode == "verdict":
-        if not model_paths:
-            raise ValueError("verdict mode requires at least one model path (the verdict model)")
+        verdict_model_path = model_paths[0] if model_paths else None
         run_verdict_batch(
             in_path=in_path,
             out_path=out_path,
-            verdict_model_path=model_paths[0],  # Use first model as verdict model
+            verdict_model_path=verdict_model_path,
+            verdict_backend=args.verdict_backend,
+            verdict_api_key=args.verdict_api_key,
+            verdict_openai_model=args.verdict_openai_model,
             annotated_folder=args.annotated_folder,
-            dataset=args.dataset,
+            dataset=dataset,
             start_idx=args.start_idx,
             max_entries=args.max_entries,
             flush_every=args.flush_every,

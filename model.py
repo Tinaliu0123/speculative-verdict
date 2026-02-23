@@ -16,10 +16,7 @@ from typing import Dict, List, Tuple, Optional
 import torch
 from torch import Tensor
 from PIL import Image
-from transformers import AutoProcessor, AutoTokenizer
 from qwen_vl_utils import process_vision_info
-
-import torch, json
 
 @dataclass
 class Specials:
@@ -345,10 +342,6 @@ class PrefillingModel:
             packed = self._eagle_prepare_inputs(messages, inputs)
 
             labels = self._mask_labels_for_chat(packed["input_ids"])
-
-            img_ctx_id = self.model.img_context_token_id
-            n_patches = packed["image_flags"].numel()
-            n_vit = n_patches * int(self.model.num_image_token)
 
             self.model.to(self.device).eval()
             avg_nll = self.model(**packed, labels=labels).loss

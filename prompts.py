@@ -120,7 +120,6 @@ def get_prompt(task: str,
     """
     task = task.lower().strip()
     dataset = dataset.lower().strip()
-    tag = (model_tag or "").lower()
 
     if task == "qa":
         return QA_PROMPTS[dataset]
@@ -150,16 +149,7 @@ def detect_dataset_from_path(path: str) -> str:
         return "infovqa"  
     elif "museum" in path_lower or "chart_museum" in path_lower:
         return "museum"
-    elif "pro" in path_lower or "chartqa_pro" in path_lower:
+    elif "chartqapro" in path_lower or "chartqa_pro" in path_lower:
         return "pro"
     else:
         return "infovqa"
-
-def get_legacy_prompts(dataset: str) -> dict:
-    """
-    Get prompts in legacy format for backward compatibility.
-    """
-    return {
-        "QA_PROMPT": get_prompt("qa", dataset),
-        "REASON_PROMPT": get_prompt("reason", dataset),
-    }

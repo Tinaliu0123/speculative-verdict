@@ -5,7 +5,6 @@ Render Markdown files to PNG images using wkhtmltoimage.
 import argparse
 import pathlib
 import subprocess
-import tempfile
 from typing import Optional
 from tqdm import tqdm
 

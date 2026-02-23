@@ -5,7 +5,7 @@ InfoVQA benchmark evaluator.
 Uses ANLS (Average Normalized Levenshtein Similarity) and Exact Match.
 """
 
-from typing import List, Dict, Any
+from typing import Dict, Any
 from utils import load_json_or_jsonl, extract_answer, extract_ground_truths
 from metrics import compute_anls, compute_exact_match
 

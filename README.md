@@ -110,11 +110,15 @@ python main.py \
 # 5. Final verdict synthesis
 python main.py \
     --mode verdict \
-    --models path/to/verdict_model \
+    --verdict_backend gpt4o \
     --in_json results/draft_reason.json \
     --out_json results/verdict.json \
     --dataset infovqa \
     --annotated_folder data/annotations/infovqa/  # optional
+# Notes:
+# - set --verdict_backend to qwen or gpt4o
+# - for qwen backend, add: --models path/to/verdict_model
+# - for gpt4o, you can optionally set --verdict_openai_model (default: gpt-4o)
 ```
 
 ## Usage
@@ -147,6 +151,9 @@ python main.py \
 
 **Verdict-specific:**
 - `--annotated_folder`: Folder containing layout-annotated images for information-intensive tasks
+- `--verdict_backend`: Verdict backend (`qwen` or `gpt4o`, default: `gpt4o`)
+- `--verdict_openai_model`: OpenAI model name when using `gpt4o` backend
+- `--verdict_api_key`: Optional OpenAI API key (otherwise uses `OPENAI_API_KEY`)
 
 **Consensus-specific:**
 - `--top_k`: Number of models to select (default: 3)
