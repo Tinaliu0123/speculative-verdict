@@ -3,7 +3,7 @@
 # Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation
 
 [![arXiv](https://img.shields.io/badge/arXiv-2510.20812-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2510.20812)
-[![Homepage](https://img.shields.io/badge/Repo-181717.svg?logo=github&logoColor=white)](https://github.com/Tinaliu0123/speculative-verdict)
+[![Twitter Thread](https://img.shields.io/badge/Thread-000000?logo=x&logoColor=white)](https://x.com/l_yuhan7272/status/1982809533736226902)
 
 The codebase of "[Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation](https://arxiv.org/abs/2510.20812)"
 
