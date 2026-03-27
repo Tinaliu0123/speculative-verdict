@@ -223,13 +223,12 @@ See [eval/README.md](eval/README.md) for detailed evaluation documentation.
 
 If you find this work useful, please cite our paper:
 ```bibtex
-@misc{liu2025smalldraftsbigverdict,
-      title={Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation}, 
-      author={Yuhan Liu and Lianhui Qin and Shengjie Wang},
-      year={2025},
-      eprint={2510.20812},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2510.20812}, 
+@inproceedings{
+liu2026small,
+title={Small Drafts, Big Verdict: Information-Intensive Visual Reasoning via Speculation},
+author={Yuhan Liu and Lianhui Qin and Shenji Wan},
+booktitle={The Fourteenth International Conference on Learning Representations},
+year={2026},
+url={https://openreview.net/forum?id=XG8wZ31oUE}
 }
 ```
